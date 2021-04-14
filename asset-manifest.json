@@ -1,0 +1,26 @@
+{
+  "files": {
+    "main.css": "/Hcm_React/static/css/main.f03d9b73.chunk.css",
+    "main.js": "/Hcm_React/static/js/main.70faa871.chunk.js",
+    "main.js.map": "/Hcm_React/static/js/main.70faa871.chunk.js.map",
+    "runtime-main.js": "/Hcm_React/static/js/runtime-main.f4ea4d71.js",
+    "runtime-main.js.map": "/Hcm_React/static/js/runtime-main.f4ea4d71.js.map",
+    "static/css/2.df3703bd.chunk.css": "/Hcm_React/static/css/2.df3703bd.chunk.css",
+    "static/js/2.81e8ac8f.chunk.js": "/Hcm_React/static/js/2.81e8ac8f.chunk.js",
+    "static/js/2.81e8ac8f.chunk.js.map": "/Hcm_React/static/js/2.81e8ac8f.chunk.js.map",
+    "static/js/3.1fac2123.chunk.js": "/Hcm_React/static/js/3.1fac2123.chunk.js",
+    "static/js/3.1fac2123.chunk.js.map": "/Hcm_React/static/js/3.1fac2123.chunk.js.map",
+    "index.html": "/Hcm_React/index.html",
+    "static/css/2.df3703bd.chunk.css.map": "/Hcm_React/static/css/2.df3703bd.chunk.css.map",
+    "static/css/main.f03d9b73.chunk.css.map": "/Hcm_React/static/css/main.f03d9b73.chunk.css.map",
+    "static/js/2.81e8ac8f.chunk.js.LICENSE.txt": "/Hcm_React/static/js/2.81e8ac8f.chunk.js.LICENSE.txt",
+    "static/media/dx.light.css": "/Hcm_React/static/media/dxicons.d8b3a23c.ttf"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.f4ea4d71.js",
+    "static/css/2.df3703bd.chunk.css",
+    "static/js/2.81e8ac8f.chunk.js",
+    "static/css/main.f03d9b73.chunk.css",
+    "static/js/main.70faa871.chunk.js"
+  ]
+}
