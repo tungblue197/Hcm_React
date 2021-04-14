@@ -1,3 +1,15 @@
 .dx-texteditor-input-container input{
     width: 100%;
 }
+tr.dx-row.dx-column-lines.dx-header-row td{
+    text-align:center !important;
+    background-image: linear-gradient(to bottom, #0788DE, #116AB8);
+    color: #fff;
+}
+.dx-texteditor-input-container input[type="text"],input[type="password"]{
+    margin: 0px;
+}
+.dx-overlay-content.dx-popup-normal.dx-resizable.dx-popup-flex-height {
+    min-width: 400px !important;
+}
+
