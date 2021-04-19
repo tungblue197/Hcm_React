@@ -1,0 +1,16 @@
+.my-input-control{
+    font-family: 'roboto' Arial, Helvetica, sans-serif;
+    label{
+        color: #234361;
+        .my-input-control-required{
+            color: red;
+        }
+        display: block;
+        margin-bottom: 6px;
+    }
+    .error-message{
+        color: red;
+        font-size: 12px;
+        margin-top: 6px;
+    }
+}

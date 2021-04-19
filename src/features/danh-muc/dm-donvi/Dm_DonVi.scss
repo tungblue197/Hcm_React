@@ -1,0 +1,15 @@
+.react-confirm-alert-body{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    width: 300px;
+    h1{
+        color: #234361;
+        margin-bottom: 12px;
+    }
+    .react-confirm-alert-button-group{
+        button{
+            background-image: linear-gradient(to bottom, #0788DE, #116AB8);
+        }
+    }
+}

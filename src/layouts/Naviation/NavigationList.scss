@@ -1,0 +1,31 @@
+.nav-bar__item{
+    color: #fff;
+    text-decoration: none;
+}
+
+.list{
+    background-color:#337ab7;
+    .side-bar{
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        li{
+            a{
+                text-decoration: none;
+                color: #fff;
+                display: block;
+                padding:12px 12px;
+                border-bottom: 1px solid #ffffff40;
+                &:hover{
+                    background-color: #337ab7d9;
+                }
+            }
+            a[aria-current="page"]{
+                background-color: #2b91e8d9 !important;
+            }
+            .active{
+                
+            }
+        }
+    }
+}

@@ -1,27 +1,21 @@
-import { routers } from '../configs/routerConfigs';
-import { Redirect, Route, Switch } from 'react-router-dom';
-import { TransitionGroup, CSSTransition } from 'react-transition-group';
-
+import { routers } from "../configs/routerConfigs";
+import { Redirect, Route, Switch } from "react-router-dom";
+import { TransitionGroup, CSSTransition } from "react-transition-group";
+import Dm_DonViPage from "../features/danh-muc/dm-donvi/Dm_DonViPage";
+import { useLocation } from "react-router-dom";
+import "./Routes.scss";
+import LoginPage from "../features/login/LoginPage";
+import LayoutPage from "../layouts/LayoutPage";
 let isLogin = true;
 
 const Routes = (props) => {
-    return (
-        <TransitionGroup>
-            <CSSTransition mountOnEnter={true} classNames={`router-none`} timeout={300}>
-                <Switch>
-                    {
-                        routers && routers.length && routers.map(route =>  <Route exact={route.exact} path={route.path} key={route.key} render={(props) => {
-                            if(route.private){
-                                if(isLogin) return <route.component {...props}/>
-                                else return <Redirect to='/'/>
-                            }
-                            return <route.component {...props}/>
-                        }} />)
-                    }
-                </Switch>
-            </CSSTransition>
-        </TransitionGroup>
-    )
-}
+  const location = useLocation();
+  return (
+    <Switch location={location}>
+      <Route path="/" exact render={(props) => <LoginPage {...props} />} />
+      <Route path="/kiemtoan" render={(props) => <LayoutPage {...props} />} />
+    </Switch>
+  );
+};
 
 export default Routes;

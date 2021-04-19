@@ -5,13 +5,18 @@ import NumberBox from 'devextreme-react/number-box';
 import { Lookup, DropDownOptions } from 'devextreme-react/lookup';
 
 
-import { Dialog, Heading } from 'evergreen-ui';
+
+import { Dialog, Heading, toaster } from 'evergreen-ui';
 import React, { PureComponent } from 'react'
 import HeaderPage from '../../../components/header-page/HeaderPage';
 import SearchBar from '../../../components/search-bar/SearchBar';
 import Dm_DonViService from './Dm_DonViService';
 import MainGrid from './local-components/MainGrid';
-import { ColumnLookup } from 'devextreme-react/tree-list';
+
+import MainForm from './local-components/MainForm';
+import { confirmAlert } from 'react-confirm-alert'; // Import
+import 'react-confirm-alert/src/react-confirm-alert.css'; 
+import './Dm_DonVi.scss';
 
 
 
@@ -19,19 +24,23 @@ export class Dm_DonViContainer extends PureComponent {
     constructor(props){
         super(props);
         this.mainGridRef = null;
+        this.formRef = null;
         this.state = {
             dataSource: [],
             diaBanData: [],
-            donViData: [],
-            linhVuc: [],
+            linhVucData: [],
             isLoading: false,
-            selectedTemplateKey: {
-                diaBan: []
-            },
             selectedValue: null,
             mode: 'view',
-            isShowModel: true,
+            isShowModel: false,
+            saving: false,
+            nontify: {
+                show: false,
+                message: '',
+                title: 'Thông báo'
+            }
         }
+        this.submitAction = null;
     }
     componentDidMount(){
         this.loadDonVi();
@@ -46,7 +55,28 @@ export class Dm_DonViContainer extends PureComponent {
         console.log('action : ', action);
         if(action === 'Sua') {
             this.setState((oldState) => {
-                return { isShowModel: true }
+                return { isShowModel: true, mode: 'update' }
+            })
+        }else if(action === 'Them'){
+            this.setState((oldState) => {
+                return { isShowModel: true, selectedValue: null, mode: 'insert' }
+            })
+        }else if(action === 'Xoa'){
+            this.setState((oldState) => {
+                return {  mode: 'view' }
+            })
+            confirmAlert({
+                title: 'Thông báo !',
+                message: 'Bạn có thực sự muốn xoá',
+                buttons: [
+                    {
+                    label: 'Có',
+                    onClick: this.handleDelete
+                    },
+                    {
+                    label: 'Không',
+                    }
+                ]
             })
         }
     }
@@ -58,7 +88,7 @@ export class Dm_DonViContainer extends PureComponent {
         });
     }
 
-
+    
 
     loadLookupData = () => {
         this.setState({isLoading: false});
@@ -69,17 +99,17 @@ export class Dm_DonViContainer extends PureComponent {
          })
          Dm_DonViService.getAllLinhLuc().then(res => {
             this.setState({
-                linhVuc: res.data
+                linhVucData: res.data
              })
          })
     }
     selectedTemplateKeyChanged = (e, tree) => {
-        const { selectedTemplateKey } = this.state;
+        const { selectedValue } = this.state;
         if(tree === 'dia-ban'){
             this.setState({
-                selectedTemplateKey: {
-                    ...selectedTemplateKey,
-                    diaBan: e
+                selectedValue: {
+                    ...selectedValue,
+                    DiaBan: e
                 }
             })
         }
@@ -90,82 +120,66 @@ export class Dm_DonViContainer extends PureComponent {
         this.setState({ selectedValue: data});
     }
 
-    componentDidUpdate(){
-        console.log('update')
+
+
+    bindSubmitForm = (submitAction) => {
+        this.submitAction = submitAction;
     }
 
-    diaBanDropDownTemplate = () => {
-        return (
-            <TreeList
-                dataSource={this.state.diaBanData}
-                keyExpr="Id"
-                parentIdExpr="DBCha"
-                searchPanel={{visible:true}}
-                height={300}
-                showBorders={true}
-                showColumnHeaders={true}
-                showRowLines={true}
-                selection={{mode: 'single'}}
-                selectedRowKeys={this.state.selectedTemplateKey.diaBan}
-                onSelectedRowKeysChange={(e) => this.selectedTemplateKeyChanged(e, 'dia-ban')}
-            >
-                <Column dataField="MaDB" caption="Mã địa bàn"/>
-                <Column dataField="TenDB" caption="Tên địa bàn"/>
-            </TreeList>
-        )
+    handleSubmitForm = () => {
+        this.submitAction();
     }
+    onSubmit = (values, options) => {
+        const { mode } = this.state;
+        if(mode === 'insert'){
+            Dm_DonViService.Insert(values).then(respon => {
+                console.log(respon);
+                if(!respon.data.success) toaster.danger(respon.data.message, { duration: 3 });
+            })
+        }else if(mode === 'update'){
+            Dm_DonViService.Update(values.Id, values).then(respon => {
+                console.log(respon);
+                if(!respon.data.success) toaster.danger(respon.data.message, { duration: 3 });
+            })
+        }
+    }
+    handleDelete = () => {
+        const { Id } = this.state.selectedValue;
+        console.log('Id : ', Id);
+        if(Id) {
+            Dm_DonViService.Delete(Id).then(respon => {
+                console.log(respon);
+                if(!respon.data.success) toaster.danger(respon.data.message, { duration: 3 });
+            })
+        }
+    }
+   
 
     render() {
+        const {dataSource, linhVucData, diaBanData, saving } = this.state;
         return (
             <div className="page-contaienr">
                <HeaderPage  onAction={this.handleAtions} />
                <SearchBar title={'Danh mục đơn vị kiểm toán'} onSearch={this.handleSearch}  />
                <div>
-                   <MainGrid ref={ref => this.mainGridRef = ref} dataSource={this.state.dataSource} diaBanData={this.state.diaBanData} linhVucData={this.state.linhVuc} selectedRowChanged={this.selectedRowChanged}  />
+                   <MainGrid ref={ref => this.mainGridRef = ref} dataSource={dataSource} diaBanData={diaBanData} linhVucData={linhVucData} selectedRowChanged={this.selectedRowChanged}  />
                    <Dialog 
                         title="Thêm đơn vị"
-                        confirmLabel="Lưu"
+                        confirmLabel={'Lưu'}
+                        isConfirmLoading={saving}
                         cancelLabel="Hủy"
                         isShown={this.state.isShowModel}
                         onCloseComplete={() => this.setState({isShowModel: false})}
                         width={'60%'}
-                        header={() => <Heading >Thêm mới đơn vị</Heading>}
+                        onConfirm={this.handleSubmitForm}
+                        header={() => <Heading >Thêm mới đơn vị</Heading>
+                        }
                     >
                        <div>
-                           <Form colCount={12}
-                                formData={{  ...this.state.selectedValue }}
-                            >
-                               <SimpleItem colSpan={6}  editorType="dxTextBox" dataField="Ma" label={{text: 'Mã đơn vị'}}>
-                                   <RequiredRule message="Mã đơn vị là trường bắt buộc"/>
-                               </SimpleItem>
-                               <SimpleItem colSpan={6} editorType="dxDropDownBox" dataField="IdCha"  label={{text: 'Đơn vị cha'}}>
-                                   
-                               </SimpleItem>
-                               <SimpleItem colSpan={6} editorType="dxTextBox" dataField="Ten" label={{text: 'Tên đơn vị'}}>
-                                    <RequiredRule message="Đơn vị là trường bắt buộc"/>
-                               </SimpleItem>
-                               <SimpleItem colSpan={6} editorType="dxDropDownBox" dataField="DiaBan"  label={{text: 'Địa bàn'}} >
-                                    <DropDownBox dataSource={this.state.diaBanData} value={this.state.selectedValue?.DiaBan}  valueExpr="Id" displayExpr="TenDB"  contentRender={this.diaBanDropDownTemplate}/>
-                                    <RequiredRule message="Địa bàn là trường bắt buộc"/>
-                               </SimpleItem>
-                               <SimpleItem colSpan={6} editorType="dxDateBox" dataField="NgayBatDau" editorOptions={{ displayFormat: 'dd/MM/yyyy'}} label={{text: 'Ngày bắt đầu'}}>
-                                   <RequiredRule message="Ngày bắt đầu là trường bắt buộc"/>
-                               </SimpleItem>
-                               
-                               <SimpleItem colSpan={6} editorType="dxDropDownBox"  label={{text: 'Lĩnh vực'}}>
-                                    <RequiredRule message="Lĩnh vực là trường bắt buộc"/>
-                               </SimpleItem>
-                               <SimpleItem colSpan={6} editorType="dxDateBox" dataField="NgayKetThuc" editorOptions={{ displayFormat: 'dd/MM/yyyy'}} label={{text: 'Ngày bắt đầu'}}>
-                                   <Label text="Ngày kết thúc"   />
-                                   <RequiredRule message="Ngày bắt đầu là trường bắt buộc"/>
-                               </SimpleItem>
-                               <SimpleItem colSpan={6} dataField="Sdt" editorType="dxTextBox" label={{text: 'Số điện thoại'}}>
-                               </SimpleItem>
-                               <SimpleItem colSpan={12} editorType="dxTextArea" label={{text: 'Ghi chú'}}>
-                               </SimpleItem>
-                           </Form>
+                           <MainForm onSubmit={this.onSubmit} bindSubmitForm={this.bindSubmitForm} formData={this.state.selectedValue} diaBanDataSource={diaBanData} donViChaDataSource={dataSource} linhVucDataSource={linhVucData}/>
                        </div>
                    </Dialog>
+                   
                </div>
             </div>
         )
